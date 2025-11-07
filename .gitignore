@@ -5,3 +5,4 @@ logs/
 *.duckdb.wal
 .env
 __pycache__/
+seeds/*.csv

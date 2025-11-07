@@ -1,0 +1,87 @@
+version: 2
+
+seeds:
+  - name: ad_events
+    description: "Raw ad impression and interaction events from ad server logs"
+    config:
+      # Tell DuckDB what data types to use (improves performance)
+      column_types:
+        event_ts: timestamp
+        view_time_ms: integer
+        pct_quartile: integer
+        audible: integer
+        clicked: integer
+    columns:
+      - name: impression_id
+        description: "Unique identifier for each ad impression"
+        tests:
+          - unique
+          - not_null
+      - name: event_ts
+        description: "Timestamp when the impression occurred"
+      - name: user_id_hash
+        description: "Hashed user identifier (privacy-safe, cannot be reversed)"
+      - name: campaign_id
+        description: "Campaign identifier"
+      - name: content_id
+        description: "Content being watched when ad was shown"
+      - name: placement
+        description: "Where the ad appeared (pre_roll, mid_roll, etc.)"
+      - name: device
+        description: "Device type (mobile, desktop, tablet, tv)"
+      - name: geo
+        description: "Geographic region code"
+      - name: view_time_ms
+        description: "How long the ad was viewable in milliseconds"
+      - name: pct_quartile
+        description: "Video completion quartile (0, 25, 50, 75, 100)"
+      - name: audible
+        description: "Was audio enabled (1=yes, 0=no)"
+      - name: clicked
+        description: "Did user click the ad (1=yes, 0=no)"
+
+  - name: content_catalog
+    description: "Content metadata - movies and shows where ads can appear"
+    config:
+      column_types:
+        duration_s: integer
+        release_year: integer
+    columns:
+      - name: content_id
+        description: "Unique content identifier"
+        tests:
+          - unique
+          - not_null
+      - name: title
+        description: "Content title"
+      - name: genre
+        description: "Content genre"
+      - name: rating
+        description: "Content rating (G, PG, PG-13, R, TV-MA)"
+      - name: duration_s
+        description: "Content duration in seconds"
+      - name: release_year
+        description: "Year content was released"
+
+  - name: conversions
+    description: "Conversion events - user actions after seeing ads"
+    config:
+      column_types:
+        event_ts: timestamp
+        revenue: numeric
+    columns:
+      - name: conversion_id
+        description: "Unique conversion identifier"
+        tests:
+          - unique
+          - not_null
+      - name: event_ts
+        description: "Timestamp when conversion occurred"
+      - name: user_id_hash
+        description: "Hashed user identifier"
+      - name: campaign_id
+        description: "Campaign this conversion is attributed to"
+      - name: conversion_type
+        description: "Type of conversion (sign_up, purchase, subscription)"
+      - name: revenue
+        description: "Revenue generated from this conversion in USD"
